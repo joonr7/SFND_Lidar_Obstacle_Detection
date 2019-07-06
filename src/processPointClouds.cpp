@@ -89,12 +89,11 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 	  // pcl::PointIndices::Ptr inliers;
 
     // TODO:: Fill in this function to find inliers for the cloud.
-    // Create the segmentation object
-    typename pcl::SACSegmentation<PointT> seg;
     pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients());
     pcl::PointIndices::Ptr inliers (new pcl::PointIndices());
 
-
+    // Create the segmentation object
+    typename pcl::SACSegmentation<PointT> seg;
     // Optional
     seg.setOptimizeCoefficients (true);
 
