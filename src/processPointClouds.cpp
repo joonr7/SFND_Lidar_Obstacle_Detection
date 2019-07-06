@@ -41,9 +41,42 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
 template<typename PointT>
 std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::SeparateClouds(pcl::PointIndices::Ptr inliers, typename pcl::PointCloud<PointT>::Ptr cloud)
 {
-  // TODO: Create two new point clouds, one cloud with obstacles and other with segmented plane
+    // Create two new point clouds, one cloud with obstacles and other with segmented plane
+    typename pcl::PointCloud<PointT>::Ptr objectCloud (new pcl::PointCloud<PointT>);
+    typename pcl::PointCloud<PointT>::Ptr planeCloud (new pcl::PointCloud<PointT>);
 
-    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult(cloud, cloud);
+    /////////////////// start //////////////////
+
+    // // Create the filtering object
+    // typename pcl::ExtractIndices<PointT> extract;
+    // extract.setInputCloud (cloud);
+    // extract.setIndices (inliers);
+    //
+    // extract.setNegative (false);
+    // extract.filter (*planeCloud);
+    // extract.setNegative (true);
+    // extract.filter (*objectCloud);
+
+    ///////////////// end /////////////////////
+
+    // or
+    ///////////////// start //////////////////
+    for(int index: inliers->indices){
+      planeCloud->points.push_back(cloud->points[index]);
+    }
+
+    typename pcl::ExtractIndices<PointT> extract;
+    extract.setInputCloud (cloud);
+    extract.setIndices (inliers);
+    extract.setNegative (true);
+    extract.filter (*objectCloud);
+
+
+    /////////////// end /////////////////////
+    std::cerr << "PointCloud representing the planar component: " << planeCloud->width * planeCloud->height << " data points." << std::endl;
+    std::cerr << "PointCloud representing the object component: " << objectCloud->width * objectCloud->height << " data points." << std::endl;
+
+    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult(objectCloud, planeCloud);
     return segResult;
 }
 
@@ -57,7 +90,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 
     // TODO:: Fill in this function to find inliers for the cloud.
     // Create the segmentation object
-    pcl::SACSegmentation<PointT> seg;
+    typename pcl::SACSegmentation<PointT> seg;
     pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients());
     pcl::PointIndices::Ptr inliers (new pcl::PointIndices());
 
@@ -71,9 +104,6 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     seg.setMaxIterations (maxIterations);
     seg.setDistanceThreshold (distanceThreshold);
 
-    // Create the filtering object
-    // pcl::ExtractIndices<pcl::PointXYZ> extract;
-
     // Segment the largest planar component from the remaining cloud
     seg.setInputCloud (cloud);
     seg.segment (*inliers, *coefficients);
@@ -81,35 +111,6 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     if(inliers->indices.size() == 0){
       std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
     }
-
-    // int i = 0, nr_points = (int) cloud->points.size ();
-    // // While 30% of the original cloud is still there
-    // while (cloud->points.size () > 0.3 * nr_points)
-    // {
-    //
-    //   if (inliers->indices.size () == 0)
-    //   {
-    //     std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
-    //     break;
-    //   }
-    //
-    //   // Extract the inliers
-    //   extract.setInputCloud (cloud);
-    //   extract.setIndices (inliers);
-    //   extract.setNegative (false);
-    //   // extract.filter (*cloud_p);
-    //   // std::cerr << "PointCloud representing the planar component: " << cloud_p->width * cloud_p->height << " data points." << std::endl;
-    //
-    //   std::stringstream ss;
-    //   ss << "table_scene_lms400_plane_" << i << ".pcd";
-    //   // writer.write<pcl::PointXYZ> (ss.str (), *cloud_p, false);
-    //
-    //   // Create the filtering object
-    //   // extract.setNegative (true);
-    //   // extract.filter (*cloud_f);
-    //   // cloud_filtered.swap (cloud_f);
-    //   i++;
-    // }
 
 
     auto endTime = std::chrono::steady_clock::now();

@@ -49,17 +49,27 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     Lidar* lidar1 = new Lidar(cars, 0.);
 
     // Create point processor
-    pcl::PointCloud<pcl::PointXYZ>::Ptr scannedPointCloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr scannedPointCloud (new pcl::PointCloud<pcl::PointXYZ>);
     scannedPointCloud = lidar1->scan();
 
     // renderRays(viewer, lidar1->position, scannedPointCloud);
     // renderPointCloud(viewer, scannedPointCloud, "inputCloud", Color(255, 255, 255));
-    renderPointCloud(viewer, scannedPointCloud, "inputCloud");
+    // renderPointCloud(viewer, scannedPointCloud, "inputCloud");
 
     // Create processPointClouds
-    // ProcessPointClouds<pcl::PointXYZ>* processPC = new ProcessPointClouds<pcl::PointXYZ>(); // create in heap
-    ProcessPointClouds<pcl::PointXYZ> processPC(); // create in stack
-    
+    ProcessPointClouds<pcl::PointXYZ>* processPC = new ProcessPointClouds<pcl::PointXYZ>(); // create in heap
+    // ProcessPointClouds<pcl::PointXYZ> processPC(); // create in stack
+
+    // Segmentation
+    //std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor->SegmentPlane(inputCloud, 100, 0.2);
+    int maxIter = 100;
+    float distThreshold = 0.2;
+    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentedPointCloud;
+    segmentedPointCloud = processPC->SegmentPlane(scannedPointCloud, maxIter, distThreshold);
+
+    renderPointCloud(viewer,segmentedPointCloud.first,"obstCloud",Color(1,0,0));
+    renderPointCloud(viewer,segmentedPointCloud.second,"planeCloud",Color(0,1,0));
+
 }
 
 
