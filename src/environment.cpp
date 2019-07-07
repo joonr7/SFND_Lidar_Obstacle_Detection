@@ -67,8 +67,23 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentedPointCloud;
     segmentedPointCloud = processPC->SegmentPlane(scannedPointCloud, maxIter, distThreshold);
 
-    renderPointCloud(viewer,segmentedPointCloud.first,"obstCloud",Color(1,0,0));
-    renderPointCloud(viewer,segmentedPointCloud.second,"planeCloud",Color(0,1,0));
+    // renderPointCloud(viewer,segmentedPointCloud.first,"obstCloud",Color(1,0,0));
+    // renderPointCloud(viewer,segmentedPointCloud.second,"planeCloud",Color(0,1,0));
+
+
+    //clustering
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters = processPC->Clustering(segmentedPointCloud.first, 1.0, 3, 30);
+
+    int clusterId = 0;
+    std::vector<Color> colors = {Color(1,0,0), Color(0,1,0), Color(0,0,1)};
+
+    for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster : cloudClusters)
+    {
+          std::cout << "cluster size ";
+          processPC->numPoints(cluster);
+          renderPointCloud(viewer,cluster,"obstCloud"+std::to_string(clusterId),colors[clusterId]);
+          ++clusterId;
+    }
 
 }
 
