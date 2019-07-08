@@ -45,27 +45,25 @@ void CityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // renderPointCloud(viewer,inputCloud,"inputCloud");
 
 
-    //
-    //
-    // bool renderScene = false;
-    // std:;vector<Car> cars = initHighway(renderScene, viewer);
-    //
-    // Lidar* lidar1 = new Lidar(cars, 0.);
-    //
-    // pcl::PointCloud<pcl::PointXYZI>::Ptr scannedPointCloud (new pcl::PointCloud<pcl::PointXYZI>);
-    // scannedPointCloud = lidar1->scan();
-    //
-    // ProcessPointClouds<pcl::PointXYZI>* processPC = new ProcessPointClouds<pcl::PointXYZI>();
-    //
-    int maxIter = 100;
-    float distThreshold = 0.2;
+    //Filtering
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud (new pcl::PointCloud<pcl::PointXYZI>);
 
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedPointCloud;
-    segmentedPointCloud = pointProcessorI->SegmentPlane(inputCloud, maxIter, distThreshold);
+    filterCloud = pointProcessorI->FilterCloud(inputCloud, 0.2 , Eigen::Vector4f (-20., -10., -2., 1), Eigen::Vector4f ( 20., 10., 1., 1));
+    renderPointCloud(viewer,filterCloud,"filterCloud");
 
-    renderPointCloud(viewer,segmentedPointCloud.first , "obstCloud", Color(1,0,0));
-    renderPointCloud(viewer,segmentedPointCloud.second, "roadCloud",Color(0,1,0));
 
+
+    // // segmentation
+    // int maxIter = 100;
+    // float distThreshold = 0.2;
+    //
+    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentedPointCloud;
+    // segmentedPointCloud = pointProcessorI->SegmentPlane(inputCloud, maxIter, distThreshold);
+    //
+    // renderPointCloud(viewer,segmentedPointCloud.first , "obstCloud", Color(1,0,0));
+    // renderPointCloud(viewer,segmentedPointCloud.second, "roadCloud",Color(0,1,0));
+
+    // //Clustrering
     // std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->Clustering(segmentedPointCloud.first, 1.0, 3, 30);
     //
     // int clusterId = 0;
