@@ -42,14 +42,14 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
     // ----------------------------------------------------
 
     // ProcessPointClouds<pcl::PointXYZI>* pointProcessorI = new ProcessPointClouds<pcl::PointXYZI>();
-    // pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessorI->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
+    pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessorI->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
     // renderPointCloud(viewer,inputCloud,"inputCloud");
 
 
     //Filtering
     pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud (new pcl::PointCloud<pcl::PointXYZI>);
 
-    filterCloud = pointProcessorI->FilterCloud(inputCloud, 0.3, Eigen::Vector4f (-10., -5., -2., 1), Eigen::Vector4f ( 30., 8., 1., 1));
+    filterCloud = pointProcessorI->FilterCloud(inputCloud, 0.1 , Eigen::Vector4f (-10., -6., -2., 1), Eigen::Vector4f ( 30., 7., 1., 1));
     // renderPointCloud(viewer,filterCloud,"filterCloud");
 
     // segmentation
@@ -67,7 +67,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
     // renderBox(viewer, roofBox, 0, Color{1., 0., 1.}, 0.9);
 
     //Clustrering
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->Clustering(segmentedPointCloud.first, 0.53, 100, 500);
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->Clustering(segmentedPointCloud.first, 1.0, 20, 1000);
 
     int clusterId = 0;
     std::vector<Color> colors = {Color(1,0,0), Color(1,1,0), Color(0,0,1)};
@@ -179,6 +179,10 @@ int main (int argc, char** argv)
     initCamera(setAngle, viewer);
     //simpleHighway(viewer);
     // CityBlock(viewer);
+
+
+
+    ProcessPointClouds<pcl::PointXYZI>* pointProcessorI = new ProcessPointClouds<pcl::PointXYZI>();
 
     ProcessPointClouds<pcl::PointXYZI>* pointProcessorI = new ProcessPointClouds<pcl::PointXYZI>();
     std::vector<boost::filesystem::path> stream = pointProcessorI->streamPcd("../src/sensors/data/pcd/data_1");
