@@ -127,24 +127,37 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 
     // Fill in this function to find inliers for the cloud.
     pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients());
-    pcl::PointIndices::Ptr inliers (new pcl::PointIndices());
+    pcl::PointIndices::Ptr pcl_inliers (new pcl::PointIndices());
 
     // Create the segmentation object
-    typename pcl::SACSegmentation<PointT> seg;
-    // Optional
-    seg.setOptimizeCoefficients (true);
+    // // With PCL Library//
 
-    // Mandatory
-    seg.setModelType (pcl::SACMODEL_PLANE);
-    seg.setMethodType (pcl::SAC_RANSAC);
-    seg.setMaxIterations (maxIterations);
-    seg.setDistanceThreshold (distanceThreshold);
+    // /////// start //////////
 
-    // Segment the largest planar component from the remaining cloud
-    seg.setInputCloud (cloud);
-    seg.segment (*inliers, *coefficients);
+    // typename pcl::SACSegmentation<PointT> seg;
+    // // Optional
+    // seg.setOptimizeCoefficients (true);
+    //
+    // // Mandatory
+    // seg.setModelType (pcl::SACMODEL_PLANE);
+    // seg.setMethodType (pcl::SAC_RANSAC);
+    // seg.setMaxIterations (maxIterations);
+    // seg.setDistanceThreshold (distanceThreshold);
+    //
+    // // Segment the largest planar component from the remaining cloud
+    // seg.setInputCloud (cloud);
+    // seg.segment (*inliers, *coefficients);
 
-    if(inliers->indices.size() == 0){
+    // /////// end //////////
+
+    //std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int maxIterations, float distanceTol)
+    // sayHello();
+    std::unordered_set<int> inliers = Ransac3D (cloud, maxIterations, distanceThreshold);
+
+    for(std::unordered_set<int>::iterator itr = inliers.begin(); itr != inliers.end(); itr++)
+        pcl_inliers->indices.push_back(*itr);
+
+    if(pcl_inliers->indices.size() == 0){
       std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
     }
 
@@ -153,7 +166,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "plane segmentation took " << elapsedTime.count() << " milliseconds" << std::endl;
 
-    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult = SeparateClouds(inliers,cloud);
+    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult = SeparateClouds(pcl_inliers,cloud);
     return segResult;
 }
 

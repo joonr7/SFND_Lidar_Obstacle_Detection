@@ -19,5 +19,11 @@ add_executable (environment
   src/environment.cpp
   src/render/render.cpp
   src/processPointClouds.cpp
+  src/quiz/ransac/ransac3d.cpp
+  # src/quiz/cluster/cluster.cpp
+  # src/quiz/cluster/kdtree.h
 )
-target_link_libraries (environment ${PCL_LIBRARIES} drm)
+target_link_libraries (environment
+  ${PCL_LIBRARIES}
+  drm
+)
