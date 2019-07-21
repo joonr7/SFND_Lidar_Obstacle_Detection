@@ -20,8 +20,8 @@ add_executable (environment
   src/render/render.cpp
   src/processPointClouds.cpp
   src/quiz/ransac/ransac3d.cpp
-  # src/quiz/cluster/cluster.cpp
-  # src/quiz/cluster/kdtree.h
+  src/quiz/cluster/cluster3d.cpp
+  
 )
 target_link_libraries (environment
   ${PCL_LIBRARIES}

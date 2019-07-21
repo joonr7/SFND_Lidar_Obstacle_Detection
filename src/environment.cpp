@@ -69,7 +69,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
     //Clustrering
     std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->Clustering(segmentedPointCloud.first, 0.53, 100, 500);
-    
+
     int clusterId = 0;
     std::vector<Color> colors = {Color(1,0,0), Color(1,1,0), Color(0,0,1)};
 

@@ -8,8 +8,8 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/crop_box.h>
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/segmentation/sac_segmentation.h>
+// #include <pcl/kdtree/kdtree.h>
+// #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/common/transforms.h>
 #include <iostream>
@@ -20,8 +20,7 @@
 #include "render/box.h"
 
 #include "quiz/ransac/ransac3d.h"
-#include "quiz/cluster/kdtree.h"
-#include "quiz/cluster/cluster.cpp"
+#include "quiz/cluster/cluster3d.h"
 
 template<typename PointT>
 class ProcessPointClouds {
