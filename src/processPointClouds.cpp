@@ -130,42 +130,42 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     pcl::PointIndices::Ptr pcl_inliers (new pcl::PointIndices());
 
     // Create the segmentation object
-    // // With PCL Library//
-
-    // /////// start //////////
-
-    // typename pcl::SACSegmentation<PointT> seg;
-    // // Optional
-    // seg.setOptimizeCoefficients (true);
-    //
-    // // Mandatory
-    // seg.setModelType (pcl::SACMODEL_PLANE);
-    // seg.setMethodType (pcl::SAC_RANSAC);
-    // seg.setMaxIterations (maxIterations);
-    // seg.setDistanceThreshold (distanceThreshold);
-    //
-    // // Segment the largest planar component from the remaining cloud
-    // seg.setInputCloud (cloud);
-    // seg.segment (*inliers, *coefficients);
-
-    // /////// end //////////
-
-    //std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int maxIterations, float distanceTol)
-    // sayHello();
+    // Without PCL Segmentation //
     std::unordered_set<int> inliers = Ransac3D (cloud, maxIterations, distanceThreshold);
+
+    std::cout << "Point cloud size after RANSAC: " << cloud->points.size() << std::endl;
+    std::cout << "inliers size after RANSAC: " << inliers.size() << std::endl;
 
     for(std::unordered_set<int>::iterator itr = inliers.begin(); itr != inliers.end(); itr++)
         pcl_inliers->indices.push_back(*itr);
+
+    // typename pcl::PointCloud<PointT>::Ptr  cloudInliers(new typename pcl::PointCloud<PointT>());
+  	// typename pcl::PointCloud<PointT>::Ptr cloudOutliers(new typename pcl::PointCloud<PointT>());
+    //
+    // for(int index = 0; index < cloud->points.size(); index++)
+  	// {
+  	// 	PointT point = cloud->points[index];
+  	// 	if(inliers.count(index))
+  	// 		cloudInliers->points.push_back(point);
+  	// 	else
+  	// 		cloudOutliers->points.push_back(point);
+  	// }
+    // std::cout << "cloudInliers->points size after RANSAC: " << cloudInliers->points.size() << std::endl;
+    // std::cout << "cloudOutliers->points size after RANSAC: " << cloudOutliers->points.size() << std::endl;
+    //
+    // if(cloudInliers->points.size() == 0){
+    //   std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
+    // }
 
     if(pcl_inliers->indices.size() == 0){
       std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
     }
 
-
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "plane segmentation took " << elapsedTime.count() << " milliseconds" << std::endl;
 
+    // std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult (cloudInliers, cloudOutliers);
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult = SeparateClouds(pcl_inliers,cloud);
     return segResult;
 }

@@ -20,8 +20,8 @@
 #include "render/box.h"
 
 #include "quiz/ransac/ransac3d.h"
-// #include "quiz/cluster/kdtree.h"
-// #include "quiz/cluster/cluster.cpp"
+#include "quiz/cluster/kdtree.h"
+#include "quiz/cluster/cluster.cpp"
 
 template<typename PointT>
 class ProcessPointClouds {
